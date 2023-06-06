@@ -6,7 +6,6 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import IconButton from "@mui/material/IconButton";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 
@@ -139,7 +138,6 @@ export default function Members() {
             <tr>
               <td style={{ width: "20%" }}>Member name</td>
               <td style={{ width: "70%" }}>Stay Period</td>
-              <td style={{ width: "5%" }}>Fee</td>
               <td></td>
               <td></td>
             </tr>
@@ -191,19 +189,6 @@ export default function Members() {
                           />
                         </Grid>
                       </Grid>
-                    </td>
-                    <td>
-                      <span className={member.edit ? "d-none" : "d-block"}>
-                        {currency}
-                        {member.fee}
-                      </span>
-                      <input
-                        style={{ width: "3em" }}
-                        className={member.edit ? "d-block" : "d-none"}
-                        id={member.id + "memberfee"}
-                        type="number"
-                        defaultValue={member.fee}
-                      />
                     </td>
                     <td>
                       <IconButton
