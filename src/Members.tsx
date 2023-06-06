@@ -5,15 +5,23 @@ import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import IconButton from "@mui/material/IconButton";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Grid from "@mui/material/Grid";
 
 interface Member {
   id: number;
   name: string;
-  startDate: string;
-  endDate: string;
-  cost: number;
+  stayPeriod: Array<Period>;
+  fee: number;
   edit: boolean;
   removed: boolean;
+}
+
+interface Period {
+  startDate: string;
+  endDate: string;
 }
 
 const currency: string = "$";
@@ -21,26 +29,31 @@ const defaultMembers: Array<Member> = [
   {
     id: 1,
     name: "First member",
-    startDate: "2023-05-01",
-    endDate: "2023-08-01",
-    cost: 500,
+    stayPeriod: [{ startDate: "2023-05-01", endDate: "2023-08-01" }],
+    fee: 500,
     edit: false,
     removed: false,
   },
 ];
 
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: "center",
+  color: theme.palette.text.secondary,
+}));
+
 const memberReducer = (members: any, action: any) => {
   console.log(action.id);
   if (action.type === "Add") {
-    let defaultDate = new Date().toISOString().substring(0, 10);
     return [
       ...members,
       {
         id: action.id,
         name: "New member",
-        startDate: defaultDate,
-        endDate: defaultDate,
-        cost: 0,
+        stayPeriod: [{ startDate: "2023-05-01", endDate: "2023-08-01" }],
+        fee: 0,
         edit: true,
         removed: false,
       },
@@ -69,17 +82,16 @@ const memberReducer = (members: any, action: any) => {
               member.id + "member-enddate"
             ) as HTMLInputElement
           ).value;
-          const updatedCost = (
-            document.getElementById(
-              member.id + "membercost"
-            ) as HTMLInputElement
+          const updatedFee = (
+            document.getElementById(member.id + "memberfee") as HTMLInputElement
           ).value;
           return {
             ...member,
             name: updatedName,
-            startDate: updatedStartDate,
-            endDate: updatedEndDate,
-            cost: updatedCost,
+            stayPeriod: [
+              { startDate: updatedStartDate, endDate: updatedEndDate },
+            ],
+            fee: updatedFee,
             edit: false,
           };
         default:
@@ -125,10 +137,9 @@ export default function Members() {
         <table className="responsive-table" width="100%">
           <thead>
             <tr>
-              <td style={{ width: "30%" }}>Member name</td>
-              <td style={{ width: "25%" }}>Start date</td>
-              <td style={{ width: "25%" }}>End date</td>
-              <td style={{ width: "10%" }}>Cost</td>
+              <td style={{ width: "20%" }}>Member name</td>
+              <td style={{ width: "70%" }}>Stay Period</td>
+              <td style={{ width: "5%" }}>Fee</td>
               <td></td>
               <td></td>
             </tr>
@@ -150,37 +161,48 @@ export default function Members() {
                       />
                     </td>
                     <td>
-                      <span className={member.edit ? "d-none" : "d-block"}>
-                        {member.startDate}
-                      </span>
-                      <input
-                        className={member.edit ? "d-block" : "d-none"}
-                        id={member.id + "member-startdate"}
-                        type="date"
-                        defaultValue={member.startDate}
-                      />
-                    </td>
-                    <td>
-                      <span className={member.edit ? "d-none" : "d-block"}>
-                        {member.endDate}
-                      </span>
-                      <input
-                        className={member.edit ? "d-block" : "d-none"}
-                        id={member.id + "member-enddate"}
-                        type="date"
-                        defaultValue={member.endDate}
-                      />
+                      <Grid container spacing={1}>
+                        <Grid item xs={2}>
+                          From
+                        </Grid>
+                        <Grid item xs={4}>
+                          <span className={member.edit ? "d-none" : "d-block"}>
+                            {member.stayPeriod?.[0].startDate}
+                          </span>
+                          <input
+                            className={member.edit ? "d-block" : "d-none"}
+                            id={member.id + "member-startdate"}
+                            type="date"
+                            defaultValue={member.stayPeriod?.[0].startDate}
+                          />
+                        </Grid>
+                        <Grid item xs={2}>
+                          to
+                        </Grid>
+                        <Grid item xs={4}>
+                          <span className={member.edit ? "d-none" : "d-block"}>
+                            {member.stayPeriod?.[0].endDate}
+                          </span>
+                          <input
+                            className={member.edit ? "d-block" : "d-none"}
+                            id={member.id + "member-enddate"}
+                            type="date"
+                            defaultValue={member.stayPeriod?.[0].endDate}
+                          />
+                        </Grid>
+                      </Grid>
                     </td>
                     <td>
                       <span className={member.edit ? "d-none" : "d-block"}>
                         {currency}
-                        {member.cost}
+                        {member.fee}
                       </span>
                       <input
+                        style={{ width: "3em" }}
                         className={member.edit ? "d-block" : "d-none"}
-                        id={member.id + "membercost"}
+                        id={member.id + "memberfee"}
                         type="number"
-                        defaultValue={member.cost}
+                        defaultValue={member.fee}
                       />
                     </td>
                     <td>
