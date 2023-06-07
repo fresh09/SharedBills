@@ -5,29 +5,10 @@ import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import IconButton from "@mui/material/IconButton";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-
-interface Bill {
-  id: number;
-  name: string;
-  startDate: string;
-  endDate: string;
-  cost: number;
-  edit: boolean;
-  removed: boolean;
-}
+import { Bill } from "./Interface";
 
 const currency: string = "$";
-const defaultBills: Array<Bill> = [
-  {
-    id: 1,
-    name: "First bill",
-    startDate: "2023-05-01",
-    endDate: "2023-08-01",
-    cost: 500,
-    edit: false,
-    removed: false,
-  },
-];
+const defaultBills: Array<Bill> = [];
 
 const billReducer = (bills: any, action: any) => {
   console.log(action.id);
@@ -63,9 +44,10 @@ const billReducer = (bills: any, action: any) => {
           const updatedEndDate = (
             document.getElementById(bill.id + "enddate") as HTMLInputElement
           ).value;
-          const updatedCost = (
-            document.getElementById(bill.id + "billcost") as HTMLInputElement
-          ).value;
+          const updatedCost: number = parseFloat(
+            (document.getElementById(bill.id + "billcost") as HTMLInputElement)
+              .value
+          );
           return {
             ...bill,
             name: updatedName,
@@ -83,7 +65,7 @@ const billReducer = (bills: any, action: any) => {
   });
 };
 
-export default function Bills() {
+export default function Bills(props: any) {
   const [bills, billDispatch] = React.useReducer(billReducer, defaultBills);
 
   const onEditBill = (billId: number) => {
@@ -102,17 +84,22 @@ export default function Bills() {
   };
 
   const onAddBill = () => {
-    const newId = Math.max(...bills.map((bill: Bill) => bill.id)) + 1;
-    console.log(newId);
+    let newId = 0;
+    if (bills.length === 0) {
+      newId = 1;
+    } else {
+      newId = Math.max(...bills.map((bill: Bill) => bill.id)) + 1;
+    }
+
     billDispatch({ type: "Add", id: newId });
   };
 
+  React.useEffect(() => {
+    props.handleBillsChange(bills);
+  }, [bills]);
+
   return (
     <div>
-      <div className="text-center">
-        <h1>Hello Anh Tuan</h1>
-        <h2>Start editing to see some magic happen!</h2>
-      </div>
       <div className="my-3 mx-2">
         <h6>Fill your bills</h6>
         <table className="responsive-table" width="100%">

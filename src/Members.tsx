@@ -8,32 +8,10 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-
-interface Member {
-  id: number;
-  name: string;
-  stayPeriod: Array<Period>;
-  fee: number;
-  edit: boolean;
-  removed: boolean;
-}
-
-interface Period {
-  startDate: string;
-  endDate: string;
-}
+import { Member } from "./Interface";
 
 const currency: string = "$";
-const defaultMembers: Array<Member> = [
-  {
-    id: 1,
-    name: "First member",
-    stayPeriod: [{ startDate: "2023-05-01", endDate: "2023-08-01" }],
-    fee: 500,
-    edit: false,
-    removed: false,
-  },
-];
+const defaultMembers: Array<Member> = [];
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -81,16 +59,12 @@ const memberReducer = (members: any, action: any) => {
               member.id + "member-enddate"
             ) as HTMLInputElement
           ).value;
-          const updatedFee = (
-            document.getElementById(member.id + "memberfee") as HTMLInputElement
-          ).value;
           return {
             ...member,
             name: updatedName,
             stayPeriod: [
               { startDate: updatedStartDate, endDate: updatedEndDate },
             ],
-            fee: updatedFee,
             edit: false,
           };
         default:
@@ -102,11 +76,15 @@ const memberReducer = (members: any, action: any) => {
   });
 };
 
-export default function Members() {
+export default function Members(props: any) {
   const [members, memberDispatch] = React.useReducer(
     memberReducer,
     defaultMembers
   );
+
+  React.useEffect(() => {
+    props.handleMembersChange(members);
+  }, [members]);
 
   const onEditMember = (memberId: number) => {
     console.log("edit " + memberId);
@@ -124,7 +102,12 @@ export default function Members() {
   };
 
   const onAddMember = () => {
-    const newId = Math.max(...members.map((member: Member) => member.id)) + 1;
+    let newId = 0;
+    if (members.length === 0) {
+      newId = 1;
+    } else {
+      newId = Math.max(...members.map((member: Member) => member.id)) + 1;
+    }
     console.log(newId);
     memberDispatch({ type: "Add", id: newId });
   };
